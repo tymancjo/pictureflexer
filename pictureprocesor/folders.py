@@ -2,7 +2,7 @@ import os
 import hashlib
 import shutil
 import csv
-
+from PIL import Image
 
 def generate_unique_hash(filename):
     """Generuje unikalny hash SHA-256 na podstawie nazwy pliku."""
@@ -139,3 +139,41 @@ def restore_original_filenames(
         print(
             f"Nie znaleziono informacji o oryginalnej nazwie dla {not_found_count} plików."
         )
+
+
+
+def convert_images_to_jpg(directory):
+    """Konwertuje wszystkie obrazy (.png, .jpg, .jpeg, .tiff, .bmp)
+    w podanym katalogu na format JPG."""
+    if not os.path.isdir(directory):
+        print(f"Podany katalog '{directory}' nie istnieje.")
+        return
+
+    supported_extensions = ['.png', '.jpg', '.jpeg', '.tiff', '.bmp']
+    converted_count = 0
+    conversion_error_count = 0
+
+    for filename in os.listdir(directory):
+        if any(filename.lower().endswith(ext) for ext in supported_extensions):
+            input_path = os.path.join(directory, filename)
+            name_without_ext, _ = os.path.splitext(filename)
+            output_filename = f"{name_without_ext}.jpg"
+            output_path = os.path.join(directory, output_filename)
+
+            try:
+                img = Image.open(input_path)
+                img = img.convert("RGB")
+                img.save(output_path, "JPEG")
+                print(f"Przekonwertowano '{filename}' na '{output_filename}'")
+                converted_count += 1
+                if input_path != output_path:
+                    os.remove(input_path)  # Opcjonalnie usuń oryginalny plik
+            except FileNotFoundError:
+                print(f"Nie znaleziono pliku '{input_path}'.")
+            except Exception as e:
+                print(f"Wystąpił błąd podczas konwersji '{filename}' do JPG: {e}")
+                conversion_error_count += 1
+
+    print(f"\nPrzekonwertowano {converted_count} obrazów do JPG w katalogu '{directory}'.")
+    if conversion_error_count > 0:
+        print(f"Wystąpiło {conversion_error_count} błędów podczas konwersji.")

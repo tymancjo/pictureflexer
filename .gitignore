@@ -8,6 +8,7 @@ final/
 src/
 intermediate/
 *.egg-info
+*.csv
 
 # Virtual environments
 .venv

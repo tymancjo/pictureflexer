@@ -9,3 +9,4 @@ if __name__ == "__main__":
     )  # Domyślna ścieżka do pliku CSV
 
     fd.restore_original_filenames(intermediate_dir, final_dir, csv_file_path)
+    fd.convert_images_to_jpg(final_dir)
